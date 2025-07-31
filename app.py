@@ -30,7 +30,7 @@ st.markdown("""
     }
     
     .cell-result {
-        background: white;
+        background: grey;
         padding: 1.5rem;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
