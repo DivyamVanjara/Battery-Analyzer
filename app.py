@@ -43,7 +43,7 @@ st.markdown("""
     }
     
     .stSelectbox > div > div {
-        background-color: #cbd3da;
+        background-color:  #000000;
     }
     
     .stNumberInput > div > div {
