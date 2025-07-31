@@ -3,7 +3,6 @@ import random
 import pandas as pd
 from typing import Dict, List, Tuple
 
-# Page configuration
 st.set_page_config(
     page_title="Battery Cell Analyzer",
     page_icon="🔋",
@@ -11,7 +10,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for modern styling
 st.markdown("""
 <style>
     .main-header {
@@ -67,17 +65,14 @@ def calculate_cell_parameters(cell_type: str, current: float) -> Dict:
         max_voltage = 3.4
         min_voltage = 3.2
     
-    # Generate random temperature between 25-40°C
     temperature = round(random.uniform(25, 40), 1)
     
-    # Calculate capacity
     capacity = round(voltage * current, 2)
     
-    # Calculate voltage range percentage for progress visualization
     if max_voltage > min_voltage:
         voltage_range_percent = round(((voltage - min_voltage) / (max_voltage - min_voltage)) * 100, 1)
     else:
-        voltage_range_percent = 50.0  # Default to 50% if range is invalid
+        voltage_range_percent = 50.0 
     
     return {
         "voltage": voltage,
@@ -100,7 +95,6 @@ def display_cell_result(cell_id: int, cell_type: str, params: Dict):
     </div>
     """, unsafe_allow_html=True)
     
-    # Create columns for metrics
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -115,14 +109,14 @@ def display_cell_result(cell_id: int, cell_type: str, params: Dict):
     with col4:
         st.metric("Capacity", f"{params['capacity']} Wh")
     
-    # Voltage range progress bar
+
     st.write("**Voltage Range:**")
     progress_value = max(0.0, min(1.0, params['voltage_range_percent'] / 100))
     st.progress(progress_value)
     st.write(f"Range: {params['min_voltage']}V - {params['max_voltage']}V (Current: {params['voltage']}V)")
 
 def main():
-    # Header
+
     st.markdown("""
     <div class="main-header">
         <h1>🔋 Battery Cell Analyzer</h1>
@@ -130,14 +124,11 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    # Sidebar for configuration
     st.sidebar.header("⚙️ Cell Configuration")
     st.sidebar.write("Configure up to 8 battery cells for analysis")
     
-    # Number of cells to configure
     num_cells = st.sidebar.slider("Number of cells to analyze", 1, 8, 3)
     
-    # Cell configuration
     cells_data = []
     
     st.sidebar.subheader("Cell Settings")
@@ -145,7 +136,6 @@ def main():
     for i in range(num_cells):
         st.sidebar.write(f"**Cell {i+1}**")
         
-        # Cell type selection
         cell_type = st.sidebar.selectbox(
             f"Cell {i+1} Type",
             ["LFP", "MNC"],
@@ -153,15 +143,14 @@ def main():
             help="LFP: Lithium Iron Phosphate, MNC: Lithium Manganese Cobalt"
         )
         
-        # Current input
-        current = st.sidebar.number_input(
+        current = round(st.sidebar.number_input(
             f"Cell {i+1} Current (A)",
             min_value=0.1,
             max_value=10.0,
             value=2.0,
             step=0.1,
             key=f"current_{i}"
-        )
+        ),2)
         
         cells_data.append({
             "id": i + 1,
@@ -171,14 +160,11 @@ def main():
         
         st.sidebar.write("---")
     
-    # Analysis button
     if st.sidebar.button("🔍 Analyze Cells", type="primary"):
         st.session_state.analyze = True
     
-    # Main content area
     if hasattr(st.session_state, 'analyze') and st.session_state.analyze:
         
-        # Calculate parameters for all cells
         results = []
         for cell in cells_data:
             params = calculate_cell_parameters(cell["type"], cell["current"])
@@ -188,7 +174,6 @@ def main():
                 **params
             })
         
-        # Summary metrics
         st.header("📊 Analysis Summary")
         
         total_capacity = sum(result["capacity"] for result in results)
@@ -196,7 +181,6 @@ def main():
         peak_voltage = max(result["voltage"] for result in results)
         cell_count = len(results)
         
-        # Display summary in columns
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -213,17 +197,14 @@ def main():
         
         st.write("---")
         
-        # Individual cell results
         st.header("🔋 Individual Cell Results")
         
         for result in results:
             display_cell_result(result["id"], result["type"], result)
             st.write("")
         
-        # Data table
         st.header("📋 Data Table")
         
-        # Create DataFrame for table display
         df_data = []
         for result in results:
             df_data.append({
@@ -240,7 +221,6 @@ def main():
         df = pd.DataFrame(df_data)
         st.dataframe(df, use_container_width=True)
         
-        # Download button for CSV
         csv = df.to_csv(index=False)
         st.download_button(
             label="📥 Download Results as CSV",
@@ -249,23 +229,19 @@ def main():
             mime="text/csv"
         )
         
-        # Cell type distribution
         st.header("📈 Cell Type Distribution")
         
         type_counts = df["Type"].value_counts()
         st.bar_chart(type_counts)
         
-        # Capacity comparison
         st.header("⚡ Capacity Comparison")
         
         capacity_data = df.set_index("Cell ID")["Capacity (Wh)"]
         st.bar_chart(capacity_data)
         
     else:
-        # Welcome message
         st.info("👈 Configure your battery cells in the sidebar and click 'Analyze Cells' to get started!")
         
-        # Instructions
         st.header("📖 How to Use")
         
         st.write("""
@@ -276,7 +252,6 @@ def main():
         5. **Review Results**: View detailed analysis including voltage, temperature, and capacity calculations
         """)
         
-        # Cell type information
         st.header("🔋 Cell Type Information")
         
         col1, col2 = st.columns(2)
