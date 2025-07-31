@@ -30,7 +30,7 @@ st.markdown("""
     }
     
     .cell-result {
-        background: grey;
+        background: white;
         padding: 1.5rem;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -43,7 +43,7 @@ st.markdown("""
     }
     
     .stSelectbox > div > div {
-        background-color: #f8f9fa;
+        background-color: #cbd3da;
     }
     
     .stNumberInput > div > div {
